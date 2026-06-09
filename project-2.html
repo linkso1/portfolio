@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>实时数据仪表盘 - 项目详情</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* ========== 项目详情页内联样式 ========== */
+        .detail-banner {
+            position: relative;
+            height: 420px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 70px;
+        }
+
+        .detail-banner-bg {
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(135deg, rgba(0, 206, 201, 0.3) 0%, rgba(108, 92, 231, 0.2) 50%, rgba(253, 121, 168, 0.1) 100%),
+                url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1400&q=80') center/cover no-repeat;
+            filter: brightness(0.4);
+        }
+
+        .detail-banner-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            padding: 0 24px;
+        }
+
+        .detail-banner-content .tag {
+            display: inline-block;
+            padding: 6px 20px;
+            border-radius: 50px;
+            background: rgba(0, 206, 201, 0.3);
+            color: #00cec9;
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            backdrop-filter: blur(10px);
+        }
+
+        .detail-banner-content h1 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff, #00cec9);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 12px;
+        }
+
+        .detail-banner-content p {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.7);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            margin-top: -60px;
+            position: relative;
+            z-index: 10;
+            margin-bottom: 60px;
+        }
+
+        .overview-card {
+            background: var(--dark-card);
+            border: 1px solid rgba(108, 92, 231, 0.12);
+            border-radius: var(--radius-md);
+            padding: 28px 24px;
+            text-align: center;
+            transition: var(--transition);
+            backdrop-filter: blur(10px);
+        }
+
+        .overview-card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(108, 92, 231, 0.3);
+            box-shadow: var(--shadow-md);
+        }
+
+        .overview-card .icon {
+            width: 52px;
+            height: 52px;
+            border-radius: var(--radius-md);
+            background: rgba(0, 206, 201, 0.12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            color: #00cec9;
+            margin: 0 auto 16px;
+        }
+
+        .overview-card .label {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+
+        .overview-card .value {
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .detail-section {
+            padding: 60px 0;
+        }
+
+        .detail-section-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .detail-section-title i {
+            color: #00cec9;
+            font-size: 1.3rem;
+        }
+
+        .detail-section-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(to right, rgba(0, 206, 201, 0.3), transparent);
+        }
+
+        .arch-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .arch-card {
+            background: var(--dark-card);
+            border: 1px solid rgba(108, 92, 231, 0.08);
+            border-radius: var(--radius-md);
+            padding: 28px 20px;
+            text-align: center;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .arch-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(135deg, #00cec9, #6c5ce7);
+        }
+
+        .arch-card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-md);
+            border-color: rgba(0, 206, 201, 0.2);
+        }
+
+        .arch-card .arch-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: var(--radius-md);
+            background: rgba(0, 206, 201, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: #00cec9;
+            margin: 0 auto 16px;
+            transition: var(--transition);
+        }
+
+        .arch-card:hover .arch-icon {
+            background: linear-gradient(135deg, #00cec9, #6c5ce7);
+            color: #fff;
+        }
+
+        .arch-card h4 {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .arch-card p {
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            background: var(--dark-card);
+            border: 1px solid rgba(108, 92, 231, 0.08);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            transition: var(--transition);
+        }
+
+        .feature-item:hover {
+            border-color: rgba(0, 206, 201, 0.25);
+            transform: translateX(6px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .feature-item .feature-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-sm);
+            background: rgba(0, 206, 201, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: #00cec9;
+            flex-shrink: 0;
+        }
+
+        .feature-item h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+
+        .feature-item p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .highlights-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        .highlight-card {
+            background: var(--dark-card);
+            border: 1px solid rgba(108, 92, 231, 0.08);
+            border-radius: var(--radius-md);
+            padding: 32px 28px;
+            text-align: center;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .highlight-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(0, 206, 201, 0.05), transparent);
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .highlight-card:hover::before {
+            opacity: 1;
+        }
+
+        .highlight-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-md);
+            border-color: rgba(0, 206, 201, 0.25);
+        }
+
+        .highlight-number {
+            font-size: 2.4rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #00cec9, #6c5ce7);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.2;
+            margin-bottom: 8px;
+        }
+
+        .highlight-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .demo-links {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 40px;
+        }
+
+        .demo-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 36px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .demo-link.primary {
+            background: linear-gradient(135deg, #00cec9, #6c5ce7);
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(0, 206, 201, 0.4);
+        }
+
+        .demo-link.primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(0, 206, 201, 0.5);
+        }
+
+        .demo-link.secondary {
+            background: transparent;
+            color: var(--text-primary);
+            border: 2px solid rgba(0, 206, 201, 0.4);
+        }
+
+        .demo-link.secondary:hover {
+            border-color: #00cec9;
+            background: rgba(0, 206, 201, 0.1);
+            transform: translateY(-3px);
+        }
+
+        .back-home-section {
+            text-align: center;
+            padding: 60px 0 80px;
+        }
+
+        .back-home-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 40px;
+            border-radius: 50px;
+            background: linear-gradient(135deg, #00cec9, #6c5ce7);
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: var(--transition);
+            box-shadow: 0 4px 20px rgba(0, 206, 201, 0.4);
+        }
+
+        .back-home-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(0, 206, 201, 0.5);
+        }
+
+        .project-description {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            line-height: 1.9;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 992px) {
+            .overview-grid { grid-template-columns: repeat(2, 1fr); }
+            .arch-grid { grid-template-columns: repeat(2, 1fr); }
+            .highlights-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 576px) {
+            .detail-banner { height: 320px; }
+            .overview-grid { grid-template-columns: 1fr; }
+            .features-grid { grid-template-columns: 1fr; }
+            .arch-grid { grid-template-columns: 1fr; }
+            .highlights-grid { grid-template-columns: 1fr; }
+            .demo-links { flex-direction: column; align-items: center; }
+        }
+
+        .fade-up {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.6s ease forwards;
+        }
+        .fade-up:nth-child(2) { animation-delay: 0.1s; }
+        .fade-up:nth-child(3) { animation-delay: 0.2s; }
+        .fade-up:nth-child(4) { animation-delay: 0.3s; }
+    </style>
+</head>
+<body>
+
+    <!-- ========== 导航栏 ========== -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="index.html" class="nav-logo">Portfolio</a>
+            <ul class="nav-menu" id="navMenu">
+                <li class="nav-item"><a href="index.html" class="nav-link">首页</a></li>
+                <li class="nav-item"><a href="index.html#about" class="nav-link">关于</a></li>
+                <li class="nav-item"><a href="skills.html" class="nav-link">技能</a></li>
+                <li class="nav-item"><a href="index.html#projects" class="nav-link active">项目</a></li>
+                <li class="nav-item"><a href="index.html#contact" class="nav-link">联系</a></li>
+            </ul>
+            <div class="nav-toggle" id="navToggle">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ========== 项目 Banner ========== -->
+    <section class="detail-banner">
+        <div class="detail-banner-bg"></div>
+        <div class="detail-banner-content">
+            <span class="tag"><i class="fas fa-chart-line"></i>&nbsp; 数据分析</span>
+            <h1>实时数据仪表盘</h1>
+            <p>企业级实时数据可视化平台，让数据驱动决策，洞察业务趋势</p>
+        </div>
+    </section>
+
+    <!-- ========== 项目概述 ========== -->
+    <div class="container">
+        <div class="overview-grid">
+            <div class="overview-card fade-up">
+                <div class="icon"><i class="fas fa-user-tie"></i></div>
+                <div class="label">项目角色</div>
+                <div class="value">前端架构师</div>
+            </div>
+            <div class="overview-card fade-up">
+                <div class="icon"><i class="fas fa-calendar-alt"></i></div>
+                <div class="label">开发周期</div>
+                <div class="value">2024.06 - 2025.01</div>
+            </div>
+            <div class="overview-card fade-up">
+                <div class="icon"><i class="fas fa-users"></i></div>
+                <div class="label">团队规模</div>
+                <div class="value">8 人团队</div>
+            </div>
+            <div class="overview-card fade-up">
+                <div class="icon"><i class="fas fa-star"></i></div>
+                <div class="label">项目状态</div>
+                <div class="value">已交付运营</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== 项目简介 ========== -->
+    <div class="container">
+        <div class="detail-section">
+            <h2 class="detail-section-title"><i class="fas fa-info-circle"></i> 项目简介</h2>
+            <p class="project-description">
+                实时数据仪表盘是一个面向企业级用户的数据可视化平台，旨在将复杂的数据转化为直观、可交互的图表和报表。该平台支持多种数据源接入，通过 WebSocket 实现数据的实时推送与更新，让决策者能够第一时间掌握业务动态。
+            </p>
+            <p class="project-description">
+                前端采用 Vue.js 构建，结合 D3.js 实现高度自定义的数据可视化图表。后端使用 Python (FastAPI) 处理数据聚合与分析逻辑，支持 RESTful API 和 WebSocket 双通道通信。系统内置权限管理模块，支持细粒度的数据访问控制，确保企业数据安全。
+            </p>
+        </div>
+    </div>
+
+    <!-- ========== 技术架构 ========== -->
+    <div class="container">
+        <div class="detail-section">
+            <h2 class="detail-section-title"><i class="fas fa-layer-group"></i> 技术架构</h2>
+            <div class="arch-grid">
+                <div class="arch-card">
+                    <div class="arch-icon"><i class="fab fa-vuejs"></i></div>
+                    <h4>Vue.js</h4>
+                    <p>前端框架，Composition API，Pinia 状态管理，组件化开发</p>
+                </div>
+                <div class="arch-card">
+                    <div class="arch-icon"><i class="fas fa-chart-area"></i></div>
+                    <h4>D3.js</h4>
+                    <p>数据可视化库，自定义 SVG 图表，丰富的交互与动画效果</p>
+                </div>
+                <div class="arch-card">
+                    <div class="arch-icon"><i class="fas fa-plug"></i></div>
+                    <h4>WebSocket</h4>
+                    <p>实时双向通信，数据推送延迟低，支持断线自动重连</p>
+                </div>
+                <div class="arch-card">
+                    <div class="arch-icon"><i class="fab fa-python"></i></div>
+                    <h4>Python</h4>
+                    <p>FastAPI 后端框架，高性能异步处理，pandas 数据分析</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== 核心功能 ========== -->
+    <div class="container">
+        <div class="detail-section">
+            <h2 class="detail-section-title"><i class="fas fa-cogs"></i> 核心功能</h2>
+            <div class="features-grid">
+                <div class="feature-item">
+                    <div class="feature-icon"><i class="fas fa-database"></i></div>
+                    <div>
+                        <h4>多数据源接入</h4>
+                        <p>支持 MySQL、PostgreSQL、MongoDB、REST API 等多种数据源，统一数据接口层</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon"><i class="fas fa-palette"></i></div>
+                    <div>
+                        <h4>自定义图表</h4>
+                        <p>拖拽式图表配置，支持折线图、柱状图、饼图、热力图等 50+ 图表类型</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon"><i class="fas fa-bell"></i></div>
+                    <div>
+                        <h4>实时告警</h4>
+                        <p>基于阈值的智能告警，支持邮件、短信、钉钉等多渠道通知推送</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon"><i class="fas fa-lock"></i></div>
+                    <div>
+                        <h4>权限管理</h4>
+                        <p>基于角色的访问控制（RBAC），支持仪表盘级别和组件级别的细粒度权限</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon"><i class="fas fa-file-export"></i></div>
+                    <div>
+                        <h4>报表导出</h4>
+                        <p>支持 PDF、Excel、PNG 等格式的报表导出，定时自动生成并发送</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon"><i class="fas fa-columns"></i></div>
+                    <div>
+                        <h4>仪表盘布局</h4>
+                        <p>可拖拽的网格布局系统，支持自由调整图表大小和位置，保存多套布局方案</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== 项目亮点 ========== -->
+    <div class="container">
+        <div class="detail-section">
+            <h2 class="detail-section-title"><i class="fas fa-trophy"></i> 项目亮点</h2>
+            <div class="highlights-grid">
+                <div class="highlight-card">
+                    <div class="highlight-number">&lt;200ms</div>
+                    <div class="highlight-label">实时数据处理延迟<br>WebSocket 高效推送保障</div>
+                </div>
+                <div class="highlight-card">
+                    <div class="highlight-number">50+</div>
+                    <div class="highlight-label">图表类型支持<br>覆盖主流数据可视化需求</div>
+                </div>
+                <div class="highlight-card">
+                    <div class="highlight-number">100万+</div>
+                    <div class="highlight-label">日数据处理量<br>高性能数据管道支撑</div>
+                </div>
+                <div class="highlight-card">
+                    <div class="highlight-number">99.95%</div>
+                    <div class="highlight-label">系统可用性<br>分布式架构保障稳定运行</div>
+                </div>
+                <div class="highlight-card">
+                    <div class="highlight-number">60fps</div>
+                    <div class="highlight-label">图表渲染帧率<br>Canvas 虚拟化渲染优化</div>
+                </div>
+                <div class="highlight-card">
+                    <div class="highlight-number">5x</div>
+                    <div class="highlight-label">数据分析效率提升<br>自动化报表替代人工操作</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== 在线演示与源码 ========== -->
+    <div class="container">
+        <div class="detail-section" style="text-align: center;">
+            <h2 class="detail-section-title" style="justify-content: center;"><i class="fas fa-rocket"></i> 体验项目</h2>
+            <p class="project-description" style="max-width: 600px; margin: 0 auto 10px;">
+                欢迎在线体验或查看源代码，了解项目的完整实现细节。
+            </p>
+            <div class="demo-links">
+                <a href="#" class="demo-link primary">
+                    <i class="fas fa-external-link-alt"></i> 在线演示
+                </a>
+                <a href="#" class="demo-link secondary">
+                    <i class="fab fa-github"></i> 查看源码
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== 返回首页 ========== -->
+    <div class="back-home-section">
+        <a href="index.html" class="back-home-btn">
+            <i class="fas fa-arrow-left"></i> 返回首页
+        </a>
+    </div>
+
+    <!-- ========== 回到顶部 ========== -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="script.js"></script>
+</body>
+</html>
